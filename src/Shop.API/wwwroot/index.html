@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Магазин товаров | DimaLabs</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f8;
+      color: #333333;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 16px 24px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 8px 14px;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #1e293b;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    button:hover {
+      background-color: #f1f5f9;
+    }
+
+    .btn-main {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .btn-main:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-success {
+      background-color: #16a34a;
+      color: #ffffff;
+      border-color: #16a34a;
+    }
+
+    .btn-success:hover {
+      background-color: #15803d;
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 0.8rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      background-color: #f8fafc;
+      font-weight: bold;
+      color: #475569;
+    }
+
+    .cart-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 1.05rem;
+      margin: 16px 0;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      color: #475569;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .message {
+      padding: 10px 14px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .message-success {
+      background-color: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .message-error {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .empty {
+      color: #64748b;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 6px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo">DimaLabs Store</div>
+      <div class="nav-buttons">
+        <button onclick="openOrdersModal()">Мои заказы</button>
+      </div>
+    </header>
+
+    <div id="statusMessage" class="message"></div>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="panel-title">Каталог товаров</div>
+        <table id="productsTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Артикул</th>
+              <th>Наименование</th>
+              <th>Цена</th>
+              <th>Остаток</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody id="productsBody">
+            <tr>
+              <td colspan="6" class="empty">Загрузка данных...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Корзина заказа</div>
+        <div id="cartItems">
+          <div class="empty">Корзина пуста</div>
+        </div>
+
+        <div id="cartOrderBlock" style="display: none; margin-top: 16px;">
+          <div class="cart-total">
+            <span>Итого:</span>
+            <span id="cartSum">0 руб.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="addressInput">Адрес доставки</label>
+            <input type="text" id="addressInput" value="г. Москва, ул. Мира, д. 10">
+          </div>
+
+          <button class="btn-success" style="width: 100%;" onclick="makeOrder()">Оформить заказ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ordersModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>История заказов</h3>
+        <button onclick="closeOrdersModal()">Закрыть</button>
+      </div>
+      <div id="ordersContent">
+        <div class="empty">Загрузка заказов...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let productsList = [];
+    let cart = [];
+
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products');
+        productsList = await response.json();
+        renderProducts();
+      } catch (e) {
+        document.getElementById('productsBody').innerHTML = '<tr><td colspan="6" class="empty">Ошибка загрузки товаров</td></tr>';
+      }
+    }
+
+    function renderProducts() {
+      const tbody = document.getElementById('productsBody');
+      if (productsList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty">Товары не найдены</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = productsList.map(p => `
+        <tr>
+          <td>${p.id}</td>
+          <td>${p.sku}</td>
+          <td><strong>${p.name}</strong></td>
+          <td>${p.price} руб.</td>
+          <td>${p.stockQuantity} шт.</td>
+          <td>
+            <button class="btn-main btn-sm" onclick="addToCart(${p.id})">Добавить</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function addToCart(productId) {
+      const product = productsList.find(p => p.id === productId);
+      if (!product) return;
+
+      const existing = cart.find(i => i.productId === productId);
+      if (existing) {
+        if (existing.quantity < product.stockQuantity) {
+          existing.quantity++;
+        } else {
+          showMessage('Нельзя заказать больше остатка на складе.', true);
+          return;
+        }
+      } else {
+        cart.push({
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1
+        });
+      }
+
+      renderCart();
+      showMessage('Товар "' + product.name + '" добавлен в корзину.');
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cartItems');
+      const orderBlock = document.getElementById('cartOrderBlock');
+
+      if (cart.length === 0) {
+        container.innerHTML = '<div class="empty">Корзина пуста</div>';
+        orderBlock.style.display = 'none';
+        return;
+      }
+
+      orderBlock.style.display = 'block';
+
+      let sum = 0;
+      container.innerHTML = cart.map(item => {
+        const cost = item.price * item.quantity;
+        sum += cost;
+        return `
+          <div class="cart-row">
+            <div>
+              <div>${item.name}</div>
+              <div style="color: #64748b; font-size: 0.8rem;">${item.price} руб. x ${item.quantity} = ${cost} руб.</div>
+            </div>
+            <div>
+              <button class="btn-sm" onclick="changeQty(${item.productId}, -1)">-</button>
+              <span style="margin: 0 4px;">${item.quantity}</span>
+              <button class="btn-sm" onclick="changeQty(${item.productId}, 1)">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('cartSum').textContent = sum + ' руб.';
+    }
+
+    function changeQty(productId, step) {
+      const item = cart.find(i => i.productId === productId);
+      if (!item) return;
+
+      item.quantity += step;
+      if (item.quantity <= 0) {
+        cart = cart.filter(i => i.productId !== productId);
+      }
+      renderCart();
+    }
+
+    async function makeOrder() {
+      const address = document.getElementById('addressInput').value.trim();
+      if (!address) {
+        showMessage('Укажите адрес доставки.', true);
+        return;
+      }
+
+      const payload = {
+        userId: 1,
+        shippingAddress: address,
+        items: cart.map(i => ({ productId: i.productId, quantity: i.quantity }))
+      };
+
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          const order = await response.json();
+          cart = [];
+          renderCart();
+          showMessage('Заказ #' + order.id + ' успешно оформлен на сумму ' + order.totalAmount + ' руб.');
+          fetchProducts();
+        } else {
+          const err = await response.json();
+          showMessage(err.error || 'Ошибка при оформлении заказа', true);
+        }
+      } catch (e) {
+        showMessage('Ошибка отправки запроса.', true);
+      }
+    }
+
+    async function openOrdersModal() {
+      const modal = document.getElementById('ordersModal');
+      const content = document.getElementById('ordersContent');
+      modal.style.display = 'flex';
+
+      try {
+        const response = await fetch('/api/orders/user/1');
+        const orders = await response.json();
+
+        if (orders.length === 0) {
+          content.innerHTML = '<div class="empty">Список заказов пуст</div>';
+          return;
+        }
+
+        content.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Номер</th>
+                <th>Адрес</th>
+                <th>Статус</th>
+                <th>Сумма</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${orders.map(o => `
+                <tr>
+                  <td>Заказ #${o.id}</td>
+                  <td>${o.shippingAddress}</td>
+                  <td>${o.status === 1 ? 'Новый' : o.status}</td>
+                  <td>${o.totalAmount} руб.</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (e) {
+        content.innerHTML = '<div class="empty">Не удалось загрузить заказы</div>';
+      }
+    }
+
+    function closeOrdersModal() {
+      document.getElementById('ordersModal').style.display = 'none';
+    }
+
+    function showMessage(text, isError = false) {
+      const box = document.getElementById('statusMessage');
+      box.textContent = text;
+      box.className = isError ? 'message message-error' : 'message message-success';
+      box.style.display = 'block';
+
+      setTimeout(() => {
+        box.style.display = 'none';
+      }, 4000);
+    }
+
+    fetchProducts();
+  </script>
+</body>
+</html>
