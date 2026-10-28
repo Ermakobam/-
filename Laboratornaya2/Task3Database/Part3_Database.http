@@ -1,0 +1,6 @@
+@Part3_Database_HostAddress = http://localhost:5027
+
+GET {{Part3_Database_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
