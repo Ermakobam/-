@@ -1,5 +1,14 @@
 <Solution>
+  <Folder Name="/Lab2/">
+    <Project Path="Lab2/Part1_Interfaces/Part1_Interfaces.csproj" />
+    <Project Path="Lab2/Part2_Repository/Part2_Repository.csproj" />
+    <Project Path="Lab2/Part3_Database/Part3_Database.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Shop.Tests/Shop.Tests.csproj" />
+  </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Lab2.Part1/Lab2.Part1.csproj" />
     <Project Path="src/Shop.API/Shop.API.csproj" />
     <Project Path="src/Shop.BLL/Shop.BLL.csproj" />
     <Project Path="src/Shop.Core/Shop.Core.csproj" />

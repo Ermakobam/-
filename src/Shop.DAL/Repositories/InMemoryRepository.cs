@@ -33,6 +33,10 @@ namespace Shop.DAL.Repositories
                 entity.Id = nextId;
                 nextId++;
             }
+            else if (entity.Id >= nextId)
+            {
+                nextId = entity.Id + 1;
+            }
             items.Add(entity);
         }
 

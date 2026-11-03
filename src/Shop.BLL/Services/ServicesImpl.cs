@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Shop.BLL.DTOs;
 using Shop.BLL.Interfaces;
+using Shop.BLL.Security;
 using Shop.Core.Entities;
 using Shop.Core.Enums;
 using Shop.DAL.Interfaces;
@@ -62,6 +62,11 @@ namespace Shop.BLL.Services
 
         public decimal CalculateTotal(List<OrderItemRequest> items)
         {
+            if (items == null || items.Count == 0)
+            {
+                return 0;
+            }
+
             decimal total = 0;
             foreach (OrderItemRequest item in items)
             {
@@ -151,12 +156,32 @@ namespace Shop.BLL.Services
         public bool CancelOrder(int orderId)
         {
             Order? order = orderRepository.GetById(orderId);
-            if (order == null || order.Status == OrderStatus.Cancelled || order.Status == OrderStatus.Delivered)
+            if (order == null)
             {
                 return false;
             }
 
-            foreach (OrderItem item in order.Items)
+            switch (order.Status)
+            {
+                case OrderStatus.Cancelled:
+                case OrderStatus.Delivered:
+                    return false;
+                case OrderStatus.New:
+                case OrderStatus.Paid:
+                case OrderStatus.Processing:
+                case OrderStatus.Shipped:
+                    RestoreStock(order);
+                    order.Status = OrderStatus.Cancelled;
+                    orderRepository.Update(order);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void RestoreStock(Order order)
+        {
+            foreach (OrderItem item in order.Items ?? new List<OrderItem>())
             {
                 Product? product = productRepository.GetById(item.ProductId);
                 if (product != null)
@@ -165,20 +190,23 @@ namespace Shop.BLL.Services
                     productRepository.Update(product);
                 }
             }
-
-            order.Status = OrderStatus.Cancelled;
-            orderRepository.Update(order);
-            return true;
         }
     }
 
     public class UserService : IUserService
     {
         private readonly IUserRepository userRepository;
+        private readonly IPasswordHasher passwordHasher;
 
         public UserService(IUserRepository userRepository)
+            : this(userRepository, new Base64PasswordHasher())
+        {
+        }
+
+        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             this.userRepository = userRepository;
+            this.passwordHasher = passwordHasher;
         }
 
         public User RegisterUser(UserRegisterRequest request)
@@ -202,7 +230,7 @@ namespace Shop.BLL.Services
             User newUser = new User
             {
                 Email = request.Email,
-                PasswordHash = Convert.ToBase64String(Encoding.UTF8.GetBytes(request.Password)),
+                PasswordHash = passwordHasher.Hash(request.Password),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Phone = request.Phone,

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Shop.Core.Entities;
 using Shop.DAL.Interfaces;
@@ -21,9 +22,14 @@ namespace Shop.DAL.Repositories
 
         public Product? GetBySku(string sku)
         {
+            if (string.IsNullOrEmpty(sku))
+            {
+                return null;
+            }
+
             foreach (Product product in items)
             {
-                if (product.Sku.ToLower() == sku.ToLower())
+                if (string.Equals(product.Sku, sku, StringComparison.OrdinalIgnoreCase))
                 {
                     return product;
                 }
@@ -65,9 +71,14 @@ namespace Shop.DAL.Repositories
     {
         public User? GetByEmail(string email)
         {
+            if (string.IsNullOrEmpty(email))
+            {
+                return null;
+            }
+
             foreach (User user in items)
             {
-                if (user.Email.ToLower() == email.ToLower())
+                if (string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase))
                 {
                     return user;
                 }
