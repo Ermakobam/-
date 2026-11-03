@@ -302,9 +302,9 @@ namespace Lab2.Part1_Interfaces
         {
             Console.OutputEncoding = Encoding.UTF8;
 
-            Console.WriteLine("================ ЧАСТЬ 1. БАЗОВЫЕ ИНТЕРФЕЙСЫ ================\n");
+            Console.WriteLine("ЧАСТЬ 1\n");
 
-            Console.WriteLine("--- Задание 1. Базовые интерфейсы ---");
+            Console.WriteLine("Задание 1. Базовые интерфейсы");
             Point point = new Point(10, 20);
             Console.WriteLine("Начальная точка: " + point);
             point.Move(5, -3);
@@ -318,7 +318,7 @@ namespace Lab2.Part1_Interfaces
             DrawAll(figures);
             Console.WriteLine();
 
-            Console.WriteLine("--- Задание 2. Интерфейсы и наследование ---");
+            Console.WriteLine("Задание 2. Интерфейсы и наследование");
             IShape c = new Circle(6);
             Console.Write("Круг R=6: ");
             PrintShapeInfo(c);
@@ -334,7 +334,7 @@ namespace Lab2.Part1_Interfaces
             Console.WriteLine("Объем: " + cube.GetVolume());
             Console.WriteLine();
 
-            Console.WriteLine("--- Задание 3. Сегрегация интерфейсов (ISP) ---");
+            Console.WriteLine("Задание 3. Сегрегация интерфейсов (ISP)");
             Printer p = new Printer();
             p.Print();
 
@@ -347,7 +347,7 @@ namespace Lab2.Part1_Interfaces
             mfd.Fax();
             Console.WriteLine();
 
-            Console.WriteLine("--- Задание 4. Интерфейсы и полиморфизм ---");
+            Console.WriteLine("Задание 4. Интерфейсы и полиморфизм");
             IPayable card = new CreditCard("****-4455");
             IPayable cash = new Cash();
             ProcessPayment(card, 12000);
